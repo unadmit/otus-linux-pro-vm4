@@ -7,6 +7,7 @@ MACHINES = {
   :zfs => {
         :box_name => "centos/7",
         :box_version => "2004.01",
+        :ip_addr => '192.168.56.101',
     :disks => {
         :sata1 => {
             :dfile => home + '/VirtualBox VMs/sata1.vdi',
@@ -60,7 +61,7 @@ Vagrant.configure("2") do |config|
         config.vm.define boxname do |box|
   
             box.vm.box = boxconfig[:box_name]
-            box.vm.boxvag_version = boxconfig[:box_version]
+            box.vm.box_version = boxconfig[:box_version]
             #box.vm.host_name = boxname.to_s
   
             #box.vm.network "forwarded_port", guest: 3260, host: 3260+offset
@@ -85,21 +86,21 @@ Vagrant.configure("2") do |config|
                     end
             end
             box.vm.provision "shell", inline: <<-SHELL
-                    #install zfs repo
-                    yum install -y
-                    http://download.zfsonlinux.org/epel/zfs-release.el7_8.noarch.rpm
-                    #import gpg key
-                    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-zfsonlinux
-                    #install DKMS style packages for correct work ZFS
-                    yum install -y epel-release kernel-devel zfs
-                    #change ZFS repo
-                    yum-config-manager --disable zfs
-                    yum-config-manager --enable zfs-kmod
-                    yum install -y zfs
-                    #Add kernel module zfs
-                    modprobe zfs
                     #install wget
-                    yum install -y wget
+                    sudo yum install -y wget
+                    #install zfs repo
+                    wget http://download.zfsonlinux.org/epel/zfs-release.el7_8.noarch.rpm
+                    sudo yum install -y ./zfs-release.el7_8.noarch.rpm
+                    #import gpg key
+                    sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-zfsonlinux
+                    #install DKMS style packages for correct work ZFS
+                    sudo yum install -y epel-release kernel-devel zfs
+                    #change ZFS repo
+                    sudo yum-config-manager --disable zfs
+                    sudo yum-config-manager --enable zfs-kmod
+                    sudo yum install -y zfs
+                    #Add kernel module zfs
+                    sudo modprobe zfs
               SHELL
         end
     end
