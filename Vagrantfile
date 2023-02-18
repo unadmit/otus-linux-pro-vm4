@@ -102,6 +102,7 @@ Vagrant.configure("2") do |config|
                     #Add kernel module zfs
                     sudo modprobe zfs
               SHELL
+            box.vm.provision "shell", path: "script.sh"
         end
     end
   end
